@@ -1,9 +1,8 @@
-import { Inter } from "next/font/google";
+import FeedCard from "@/Components/FeedCard";
 import { BiHash, BiHomeCircle, BiUser } from "react-icons/bi";
 import { BsBell, BsBookmark, BsEnvelope } from "react-icons/bs";
 import { FaXTwitter } from "react-icons/fa6";
-
-const inter = Inter({ subsets: ["latin"] });
+import { SlOptions } from "react-icons/sl";
 
 interface TwitterSidebarButton {
   title: string,
@@ -34,15 +33,19 @@ const sidebarMenuItems : TwitterSidebarButton [] =[
   {
     title: 'Profile',
     icon: <BiUser/>
+  },
+  {
+    title: 'More',
+    icon: <SlOptions/>
   }
 ]
 
 
 export default function Home() {
   return (
-    <div className={inter.className}>
+    <div>
       <div className="grid grid-cols-12 h-screen w-screen px-56">
-        <div className="col-span-3 pt-8">
+        <div className="col-span-3 pt-3 pl-14 ">
           <div className="text-3xl hover:bg-gray-900 rounded-full p-1 ml-3  h-fit w-fit cursor-pointer transition-all">
           <FaXTwitter />
           </div>
@@ -61,9 +64,18 @@ export default function Home() {
             <button className="bg-[#1d9bf0] p-2 rounded-full w-52 mt-5">Tweet</button>
           </div>
         </div>
-        <div className="col-span-6 border-r-[0.1px] border-l-[0.2px] border-gray-700"></div>
+        <div className="col-span-6 border-r-[0.1px] border-l-[0.2px] h-screen overflow-x-auto border-gray-700">
+          <FeedCard/>
+          <FeedCard/>
+          <FeedCard/>
+          <FeedCard/> 
+          <FeedCard/>
+          <FeedCard/>
+          <FeedCard/>
+          <FeedCard/>
+        </div>
         <div className="col-span-3"></div>
       </div>
     </div>
-  );
+  )
 }

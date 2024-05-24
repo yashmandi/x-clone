@@ -3,6 +3,8 @@ import { BiHash, BiHomeCircle, BiUser } from "react-icons/bi";
 import { BsBell, BsBookmark, BsEnvelope } from "react-icons/bs";
 import { FaXTwitter } from "react-icons/fa6";
 import { SlOptions } from "react-icons/sl";
+import {GoogleLogin} from "@react-oauth/google";
+import { useCallback } from "react";
 
 interface TwitterSidebarButton {
   title: string,
@@ -34,14 +36,16 @@ const sidebarMenuItems : TwitterSidebarButton [] =[
     title: 'Profile',
     icon: <BiUser/>
   },
-  {
+  {  
     title: 'More',
-    icon: <SlOptions/>
+    icon: <SlOptions/> 
   }
 ]
 
-
 export default function Home() {
+
+  const handleLoginWithGoogle = useCallback((cred: CredentialResponse) => {}, [])
+
   return (
     <div>
       <div className="grid grid-cols-12 h-screen w-screen px-56">
@@ -74,7 +78,12 @@ export default function Home() {
           <FeedCard/>
           <FeedCard/>
         </div>
-        <div className="col-span-3"></div>
+        <div className="col-span-3">
+          <div className=" p-5 bg-slate-700 rounded-lg ">  
+            <h1 className="text-2xl font-semibold my-2">New to X?</h1>
+            <GoogleLogin onSuccess={(cred) => console.log(cred)} />
+          </div>
+        </div>
       </div>
     </div>
   )

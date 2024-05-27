@@ -9,6 +9,7 @@ import { useCallback } from "react";
 interface TwitterSidebarButton {
   title: string,
   icon: React.ReactNode;
+  
 }
 
 const sidebarMenuItems : TwitterSidebarButton [] =[
@@ -44,7 +45,7 @@ const sidebarMenuItems : TwitterSidebarButton [] =[
 
 export default function Home() {
 
-  const handleLoginWithGoogle = useCallback((cred: CredentialResponse) => {}, [])
+  const handleLoginWithGoogle = useCallback((cred: Credential) => {}, [])
 
   return (
     <div>

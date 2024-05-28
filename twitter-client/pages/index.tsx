@@ -8,6 +8,8 @@ import { useCallback } from "react";
 import { toast } from "react-hot-toast";
 import { graphqlClient } from "@/clients/api";
 import { verifyUserGoogleTokenQuery } from "@/graphql/query/user";
+import { useCurrentUser } from "@/hooks/user";
+import { QueryClient, useQuery } from "@tanstack/react-query";
 
 interface TwitterSidebarButton {
   title: string,
@@ -47,6 +49,11 @@ const sidebarMenuItems: TwitterSidebarButton[] = [
 
 export default function Home() {
 
+  const { user } = useCurrentUser();
+  const queryClient = new QueryClient();
+
+  console.log(user)
+
   const handleLoginWithGoogle = useCallback(
     async (cred: CredentialResponse) => {
       const googleToken = cred.credential;
@@ -61,14 +68,16 @@ export default function Home() {
       console.log(verifyGoogleToken);
 
       if (verifyGoogleToken) window.localStorage.setItem('token', verifyGoogleToken);
+
+      await queryClient.invalidateQueries({ queryKey: ['current-user'] });
     },
-    []
+    [queryClient]
   )
 
   return (
     <div>
       <div className="grid grid-cols-12 h-screen w-screen px-56">
-        <div className="col-span-3 pt-3 pl-14 ">
+        <div className="col-span-3 pt-1 relative ">
           <div className="text-3xl hover:bg-gray-900 rounded-full p-1 ml-3 h-fit w-fit cursor-pointer transition-all">
             <FaXTwitter />
           </div>
@@ -86,6 +95,12 @@ export default function Home() {
             </ul>
             <button className="bg-[#1d9bf0] p-2 rounded-full w-52 mt-5">Tweet</button>
           </div>
+          {user && <div className="absolute bottom-5 flex gap-2 items-center bg-slate-700 px-4 py-2 rounded-full">
+            {user && user.profileImageURL && <img src={user?.profileImageURL} alt="user-image" height={50} width={50} />}
+            <div className="text-xl">
+              {user.firstName} {user.lastName}
+            </div>
+          </div>}
         </div>
         <div className="col-span-6 border-r-[0.1px] border-l-[0.2px] h-screen overflow-x-auto border-gray-700">
           <FeedCard />
@@ -98,10 +113,12 @@ export default function Home() {
           <FeedCard />
         </div>
         <div className="col-span-3">
-          <div className="p-5 bg-slate-700 rounded-lg">
-            <h1 className="text-2xl font-semibold my-2">New to X?</h1>
-            <GoogleLogin onSuccess={handleLoginWithGoogle} />
-          </div>
+          {
+            !user && (<div className="p-5 bg-slate-700 rounded-lg">
+              <h1 className="text-2xl font-semibold my-2">New to X?</h1>
+              <GoogleLogin onSuccess={handleLoginWithGoogle} />
+            </div>
+            )}
         </div>
       </div>
     </div>

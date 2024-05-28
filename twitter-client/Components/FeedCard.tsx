@@ -5,7 +5,7 @@ import { FaRetweet } from 'react-icons/fa6'
 import { AiOutlineHeart } from 'react-icons/ai'
 
 const FeedCard: React.FC = () => {
-    return <div className='border border-r-0 border-l-0 border-b-0 border-gray-600 p-5 hover:bg-slate-900 transition-all cursor-pointer'>
+    return <div className='border border-r-0 border-l-0  border-b-0 border-gray-600 p-5 hover:bg-slate-900 transition-all cursor-pointer'>
         <div className='grid grid-cols-12'>
             <div className='col-span-1'>
                 <Image

@@ -3,9 +3,11 @@ import { BiHash, BiHomeCircle, BiUser } from "react-icons/bi";
 import { BsBell, BsBookmark, BsEnvelope } from "react-icons/bs";
 import { FaXTwitter } from "react-icons/fa6";
 import { SlOptions } from "react-icons/sl";
-import { GoogleLogin } from "@react-oauth/google";
+import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { useCallback } from "react";
 import { toast } from "react-hot-toast";
+import { graphqlClient } from "@/clients/api";
+import { verifyUserGoogleTokenQuery } from "@/graphql/query/user";
 
 interface TwitterSidebarButton {
   title: string,
@@ -44,34 +46,24 @@ const sidebarMenuItems: TwitterSidebarButton[] = [
 ]
 
 export default function Home() {
-  const handleLoginWithGoogle = useCallback(async (cred: any) => {
-    const googleToken = cred.credential;
-    if (!googleToken) {
-      toast.error(`Google token not found`);
-      return;
-    }
 
-    try {
-      const response = await fetch('/verify-google-token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token: googleToken }),
-      });
+  const handleLoginWithGoogle = useCallback(
+    async (cred: CredentialResponse) => {
+      const googleToken = cred.credential;
+      if (!googleToken) return toast.error(`Google token not found!`);
 
-      if (!response.ok) {
-        throw new Error('Failed to verify token');
-      }
+      const { verifyGoogleToken } = await graphqlClient.request(
+        verifyUserGoogleTokenQuery,
+        { token: googleToken }
+      );
 
-      const data = await response.json();
-      toast.success("Verified Success");
-      console.log(data);
-    } catch (error) {
-      console.error("Error verifying Google token:", error);
-      toast.error("Failed to verify Google token");
-    }
-  }, []);
+      toast.success("Login successfull!");
+      console.log(verifyGoogleToken);
+
+      if (verifyGoogleToken) window.localStorage.setItem('token', verifyGoogleToken);
+    },
+    []
+  )
 
   return (
     <div>

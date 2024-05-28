@@ -18,10 +18,13 @@ const server_1 = require("@apollo/server");
 const express4_1 = require("@apollo/server/express4");
 const body_parser_1 = __importDefault(require("body-parser"));
 const index_1 = require("./user/index.");
+const cors_1 = __importDefault(require("cors"));
+const jwt_1 = __importDefault(require("../services/jwt"));
 function initServer() {
     return __awaiter(this, void 0, void 0, function* () {
         const app = (0, express_1.default)();
         app.use(body_parser_1.default.json());
+        app.use((0, cors_1.default)());
         const graphqlServer = new server_1.ApolloServer({
             typeDefs: `
             ${index_1.User.types}
@@ -35,7 +38,15 @@ function initServer() {
             }
         });
         yield graphqlServer.start();
-        app.use("/graphql", (0, express4_1.expressMiddleware)(graphqlServer));
+        app.use("/graphql", (0, express4_1.expressMiddleware)(graphqlServer, {
+            context: (_a) => __awaiter(this, [_a], void 0, function* ({ req, res }) {
+                return {
+                    user: req.headers.authorization
+                        ? jwt_1.default.decodeToken(req.headers.authorization.split("Bearer ")[1])
+                        : undefined
+                };
+            })
+        }));
         return app;
     });
 }

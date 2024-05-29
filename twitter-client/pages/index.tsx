@@ -53,6 +53,13 @@ export default function Home() {
   const { user } = useCurrentUser();
   const queryClient = new QueryClient();
 
+  const handleSelectImage = useCallback(() => {
+    const input = document.createElement('input')
+    input.setAttribute('type', 'file')
+    input.setAttribute('accept', 'image/*')
+    input.click()
+  }, [])
+
   console.log(user)
 
   const handleLoginWithGoogle = useCallback(
@@ -123,7 +130,7 @@ export default function Home() {
                     placeholder="What's happening? ">
                   </textarea>
                   <div className="flex justify-between items-center">
-                    <BiImageAlt className="text-xl mt-2 " />
+                    <BiImageAlt onClick={handleSelectImage} className="text-xl mt-2 " />
                     <button className="bg-[#1d9bf0] font-semibold text-xs mt-2 py-1 px-4 rounded-full hover:bg-[#1a8cd8]">
                       Tweet
                     </button>

@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import prismaClient from "../clients/db";
 import { User } from "@prisma/client";
 import { JWTUser } from "../interfaces";
 

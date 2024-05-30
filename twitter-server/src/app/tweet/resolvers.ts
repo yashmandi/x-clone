@@ -1,3 +1,4 @@
+import { Tweet } from "@prisma/client";
 import prismaClient from "../../clients/db";
 import { GraphqlContext } from "../../interfaces";
 

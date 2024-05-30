@@ -14,6 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.resolvers = void 0;
 const db_1 = __importDefault(require("../../clients/db"));
+const queries = {
+    getAllTweets: () => db_1.default.tweet.findMany({ orderBy: { createdAt: "desc" } })
+};
 const mutations = {
     createTweet: (parent_1, _a, ctx_1) => __awaiter(void 0, [parent_1, _a, ctx_1], void 0, function* (parent, { payload }, ctx) {
         if (!ctx.user)
@@ -33,4 +36,4 @@ const extraResolvers = {
         author: (parent) => db_1.default.user.findUnique({ where: { id: parent.authorId } })
     }
 };
-exports.resolvers = { mutations, extraResolvers };
+exports.resolvers = { mutations, extraResolvers, queries };

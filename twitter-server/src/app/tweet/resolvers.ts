@@ -7,6 +7,10 @@ interface CreateTweetPayload {
     imageURL?: string
 }
 
+const queries = {
+    getAllTweets: () => prismaClient.tweet.findMany({ orderBy: { createdAt: "desc" } })
+}
+
 const mutations = {
     createTweet: async (
         parent: any,
@@ -31,4 +35,4 @@ const extraResolvers = {
     }
 }
 
-export const resolvers = { mutations, extraResolvers }
+export const resolvers = { mutations, extraResolvers, queries }

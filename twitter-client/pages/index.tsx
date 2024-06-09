@@ -11,6 +11,7 @@ import { verifyUserGoogleTokenQuery } from "@/graphql/query/user";
 import { useCurrentUser } from "@/hooks/user";
 import { QueryClient, useQuery } from "@tanstack/react-query";
 import Image from "next/image";
+import { useGetAllTweets } from "@/hooks/tweet";
 
 interface TwitterSidebarButton {
   title: string,
@@ -51,6 +52,7 @@ const sidebarMenuItems: TwitterSidebarButton[] = [
 export default function Home() {
 
   const { user } = useCurrentUser();
+  const { tweets = [] } = useGetAllTweets();
   const queryClient = new QueryClient();
 
   const handleSelectImage = useCallback(() => {
@@ -67,20 +69,26 @@ export default function Home() {
       const googleToken = cred.credential;
       if (!googleToken) return toast.error(`Google token not found!`);
 
-      const { verifyGoogleToken } = await graphqlClient.request(
-        verifyUserGoogleTokenQuery,
-        { token: googleToken }
-      );
+      try {
+        const { verifyGoogleToken } = await graphqlClient.request(
+          verifyUserGoogleTokenQuery,
+          { token: googleToken }
+        );
 
-      toast.success("Login successfull!");
-      console.log(verifyGoogleToken);
-
-      if (verifyGoogleToken) window.localStorage.setItem('token', verifyGoogleToken);
-
-      await queryClient.invalidateQueries({ queryKey: ['current-user'] });
+        if (verifyGoogleToken && verifyGoogleToken.token) {
+          window.localStorage.setItem('token', verifyGoogleToken.token);
+          toast.success("Login successful!");
+          await queryClient.invalidateQueries({ queryKey: ['current-user'] });
+        } else {
+          toast.error("Login failed!");
+        }
+      } catch (error) {
+        toast.error("Login failed!");
+        console.error("Login error:", error);
+      }
     },
     [queryClient]
-  )
+  );
 
   return (
     <div>
@@ -139,14 +147,12 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
+          {
+            tweets?.map((tweet: Tweet) =>  // Assuming Tweet is the type or interface for a tweet
+              tweet ? <FeedCard key={tweet.id} data={tweet} /> : null
+            )
+          }
+
         </div>
         <div className="col-span-3">
           {

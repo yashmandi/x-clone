@@ -35,12 +35,12 @@ const queries = {
             }
         );
 
-        const user = await prismaClient.user.findUnique({
+        let user = await prismaClient.user.findUnique({
             where: { email: data.email },
         });
 
         if (!user) {
-            await prismaClient.user.create({
+            user = await prismaClient.user.create({
                 data: {
                     email: data.email,
                     firstName: data.given_name ?? '',
@@ -50,13 +50,11 @@ const queries = {
             });
         }
 
-        const userInDb = await prismaClient.user.findUnique({ where: { email: data.email }, })
+        if (!user) throw new Error("User with email not found");
 
-        if (!userInDb) throw new Error("User with email not found");
+        const userToken = await JWTService.generateTokenForUser(user);
 
-        const userToken = await JWTService.generateTokenForUser(userInDb);
-
-        return userToken;
+        return { token: userToken };
     },
     getCurrentUser: async (parent: any, args: any, ctx: GraphqlContext) => {
         const id = ctx.user?.id;

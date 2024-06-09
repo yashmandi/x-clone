@@ -25,11 +25,11 @@ const queries = {
         const { data } = yield axios_1.default.get(googleOauthURL.toString(), {
             responseType: "json"
         });
-        const user = yield db_1.default.user.findUnique({
+        let user = yield db_1.default.user.findUnique({
             where: { email: data.email },
         });
         if (!user) {
-            yield db_1.default.user.create({
+            user = yield db_1.default.user.create({
                 data: {
                     email: data.email,
                     firstName: (_b = data.given_name) !== null && _b !== void 0 ? _b : '',
@@ -38,11 +38,10 @@ const queries = {
                 },
             });
         }
-        const userInDb = yield db_1.default.user.findUnique({ where: { email: data.email }, });
-        if (!userInDb)
+        if (!user)
             throw new Error("User with email not found");
-        const userToken = yield jwt_1.default.generateTokenForUser(userInDb);
-        return userToken;
+        const userToken = yield jwt_1.default.generateTokenForUser(user);
+        return { token: userToken };
     }),
     getCurrentUser: (parent, args, ctx) => __awaiter(void 0, void 0, void 0, function* () {
         var _c;
